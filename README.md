@@ -19,11 +19,11 @@
 
 ## Features
 
-- **Typo Tolerance**: Handles common typing errors using Levenshtein distance
-- **Multi-Algorithm**: Uses bitset filtering, greedy fuzzy matching, and Jaro-Winkler similarity
-- **Frecency Ranking**: Learns from user behavior to prioritize frequently and recently used files
-- **Parallel Processing**: Scalable performance for large datasets
-- **Thread-Safe**: Safe for concurrent use in multi-threaded applications
+- **Typo tolerance**: Handles common typing errors using Levenshtein distance
+- **Multi-algorithm**: Uses bitset filtering and optimal alignment fuzzy matching
+- **Frecency ranking**: Learns from user behavior to prioritize frequently and recently used files
+- **Parallel processing**: Scalable performance for large datasets
+- **Thread-safe**: Safe for concurrent use in multi-threaded applications
 
 ## Installation
 
@@ -87,15 +87,12 @@ func main() {
 ### `NewSearcher(items []string) *Searcher`
 Creates a new searcher optimized for file paths.
 
-### `Search(query string, opts ...*SearchOptions) []string`
+### `Search(query string, opts ...SearchOption) []string`
 Returns the top matching results for a query, automatically applying frecency boosts.
 
-### `RecordSelection(query, filePath string)`
+### `RecordSelection(query, selected string)`
 Records a selection to increase the priority (frecency) of a file for future searches.
-
-### `ClearCache()`
-Clears all search history and user preferences.
 
 ## License
 
-This project is licensed under the [0BSD License](LICENSE).
+This project is licensed under the [0BSD License](LICENSE). Meaning you can do whatever you want with it.
