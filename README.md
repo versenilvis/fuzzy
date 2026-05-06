@@ -17,7 +17,7 @@
 > It is optimized for file path searching rather than just single strings.
 > This package is intended for local use or side projects.
 
-<br>
+---
 
 ## Features
 
