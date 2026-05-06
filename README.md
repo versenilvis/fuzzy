@@ -1,4 +1,4 @@
-<div align="center">
+<!-- <div align="center">
  <img width="20%" width="1920" height="1920" alt="gopher-min" src="https://github.com/user-attachments/assets/a7f7729e-2e34-4ecc-8866-c8c85d93f233" />
 
   <h1>Fuzzy</h1>
@@ -6,7 +6,9 @@
   [![License: 0BSD](https://img.shields.io/badge/License-0BSD-blue?style=for-the-badge&logo=github&logoColor=white)](./LICENSE)
   [![Status](https://img.shields.io/badge/status-beta-yellow?style=for-the-badge&logo=github&logoColor=white)]()
   [![Documentation](https://img.shields.io/badge/docs-available-brightgreen?style=for-the-badge&logo=github&logoColor=white)](./fuzzy.go)
-</div>
+</div> -->
+
+# Fuzzy
 
 <p><b>Fuzzy is a fast and accurate fuzzy matching library for file search. It combines multiple search algorithms with a smart frecency-based ranking system to provide relevant results quickly.</b></p>
 
