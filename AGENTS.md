@@ -13,8 +13,10 @@ Always prefer Makefile commands over raw go commands if possible.
 
 ## Code Quality
 
+- Please follow exact the format of comment in each file.
 - Each comment must be detailed but should be concise at the same time.
 - Each function and struct must have comments at the top to quickly explain the function, following Go standard practices.
+- Each file should have a package comment at the top to explain the purpose of the file.
 
 ## Architecture
 
@@ -34,6 +36,7 @@ The project is a pure Go library with zero external dependencies. It is split in
 ## Scoring Algorithm
 
 The scoring logic is located in `core/score.go`. It prioritizes:
+
 1. Exact filename prefix matches (Tier 1)
 2. Character hits in filenames (Tier 2)
 3. Contiguous character matches
