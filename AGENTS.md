@@ -51,6 +51,9 @@ The scoring logic is located in `core/score.go`. It prioritizes:
 - If a file grows too large with multiple `impl` equivalents, split it
 - Keep comments detailed and concise
 - Be careful with locking; `FileMemory` uses a `RWMutex` to ensure thread safety during concurrent searches
+- Use `any` type for generics to avoid type casting
+- Use ` for := range n` instead of `for i` when possible
+- Use `min` and `max` functions to avoid branching
 
 ## Top Level API
 
