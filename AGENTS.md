@@ -28,19 +28,19 @@ The project is a pure Go library with zero external dependencies. It is split in
 ### Key Components
 
 - **Unigram Filter (`core/filter.go`)**: Uses inverted bitsets for fast candidate filtering (K-of-N match)
-- **Scoring Engine (`core/score.go`)**: Greedy fuzzy matching algorithm with word boundary and filename boosts
-- **Frecency Memory (`core/memory.go`)**: Tracks selection history and applies time-decayed boosts to results
-- **Parallel Worker (`core/worker.go`)**: Partitions search tasks across CPU cores for large datasets
-- **Utilities (`core/utils.go`)**: ASCII normalization and optimized Levenshtein distance
+- **Scoring Engine (`core/score.go`)**: Greedy fuzzy matching with **Right-to-Left** alignment to prioritize filenames
+- **Frecency Memory (`core/memory.go`)**: Thread-safe history tracking with `RWMutex` and time-decayed boosts
+- **Parallel Worker (`core/worker.go`)**: Smart partitioning of search tasks optimized for high-core CI/CD environments
+- **Utilities (`core/utils.go`)**: ASCII-optimized normalization and zero-allocation Levenshtein distance
 
 ## Scoring Algorithm
 
-The scoring logic is located in `core/score.go`. It prioritizes:
+The engine uses a multi-tier scoring strategy located in `core/score.go`:
 
-1. Exact filename prefix matches (Tier 1)
-2. Character hits in filenames (Tier 2)
-3. Contiguous character matches
-4. Word boundary matches (starts of folders or filenames)
+1.  **Tier 1 (Prefix Match)**: Bonus for exact prefix matches on the filename (highest priority)
+2.  **Tier 2 (Density Match)**: Boost for character hits specifically within the filename (ignoring path noise)
+3.  **Tier 3 (Right-to-Left Greedy)**: Aligns query characters from right to left to ensure the last query character matches a deep path component
+4.  **Tier 4 (Structural Boost)**: Extra points for word boundaries (e.g., `_`, `-`, `/`, or spaces)
 
 ## Development Notes
 
