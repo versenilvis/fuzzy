@@ -1,3 +1,3 @@
 module github.com/versenilvis/fuzzy
 
-go 1.26.2
+go 1.24

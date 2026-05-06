@@ -1,0 +1,91 @@
+name: Release Go Package
+
+on:
+  push:
+    branches:
+      - main
+      - fix/download-version
+      - test/ci-cd
+    tags:
+      - 'v*'
+  pull_request:
+    branches: [ '**' ]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  test-and-release:
+    name: Quality & Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+          cache: true
+
+      - name: Run Linter
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: latest
+
+      # Quick Test: Runs on any Pull Request, or during Release/Test-branch
+      - name: Quick Test
+        if: github.event_name == 'pull_request' || startsWith(github.ref, 'refs/tags/v') || github.ref_name == 'test/ci-cd'
+        run: go test -v ./...
+
+      # Deep Test (-race): Runs only when PR targets main, or during Release/Test-branch
+      - name: Deep Test (Race Detection)
+        if: (github.event_name == 'pull_request' && github.base_ref == 'main') || startsWith(github.ref, 'refs/tags/v') || github.ref_name == 'test/ci-cd'
+        run: go test -v -race $(go list ./... | grep -v /bench)
+
+      # Benchmark: Runs only on Releases (tags), test/ci-cd branch, or manual dispatch
+      - name: Run Benchmark & Capture Output
+        if: startsWith(github.ref, 'refs/tags/v') || github.ref_name == 'test/ci-cd' || github.event_name == 'workflow_dispatch'
+        run: |
+          echo "BENCH_REPORT<<EOF" >> $GITHUB_ENV
+          go run scripts/bench_analyzer.go >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      # Prepare combined release notes
+      - name: Prepare Release Notes
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          # 1. Generate standard GitHub release notes (What's Changed, Contributors, etc.)
+          GEN_NOTES=$(gh api repos/${{ github.repository }}/releases/generate-notes -f tag_name=${{ github.ref_name }} --jq .body)
+          
+          # 2. Build the final body
+          echo "RELEASE_BODY<<EOF" >> $GITHUB_ENV
+          echo "$GEN_NOTES" >> $GITHUB_ENV
+          echo "" >> $GITHUB_ENV
+          echo "## Installation" >> $GITHUB_ENV
+          echo "\`\`\`bash" >> $GITHUB_ENV
+          echo "go get github.com/${{ github.repository }}@${{ github.ref_name }}" >> $GITHUB_ENV
+          echo "\`\`\`" >> $GITHUB_ENV
+          echo "" >> $GITHUB_ENV
+          echo "## Performance Benchmarks" >> $GITHUB_ENV
+          echo "\`\`\`text" >> $GITHUB_ENV
+          echo "${{ env.BENCH_REPORT }}" >> $GITHUB_ENV
+          echo "\`\`\`" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v1
+        with:
+          name: ${{ github.ref_name }}
+          body: ${{ env.RELEASE_BODY }}
+          generate_release_notes: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
