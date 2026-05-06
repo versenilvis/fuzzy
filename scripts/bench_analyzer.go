@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
+	"os"
 	"os/exec"
 	"regexp"
 	"strconv"
@@ -18,7 +19,7 @@ type benchResult struct {
 }
 
 func main() {
-	fmt.Println("Running benchmarks, please wait...")
+	fmt.Fprintln(os.Stderr, "Running benchmarks, please wait...")
 
 	cmd := exec.Command("go", "test", "-bench=.", "-benchmem", "./bench/...")
 	var out bytes.Buffer
@@ -44,24 +45,24 @@ func main() {
 func parseBenchOutput(output string) []benchResult {
 	var results []benchResult
 	scanner := bufio.NewScanner(strings.NewReader(output))
-	
+
 	// regex to parse: Name-Threads  Iterations  Time/op  Mem/op  Allocs/op
 	re := regexp.MustCompile(`Benchmark([\w/]+)-?\d*\s+\d+\s+([\d\.]+)\sns/op\s+([\d\.]+)\sB/op`)
 
 	descriptions := map[string]string{
-		"Linux100k/ascii_short":     "Real-world dataset (100K files)",
-		"Linux100k/ascii_ext":       "Extended ASCII search",
-		"Linux100k/path_like":       "Deep nesting (/usr/lib/...)",
-		"Linux100k/typo":            "Typo-tolerant search",
-		"Linux100k/long_query":      "Long query pattern",
-		"Linux100k_NewSearcher":     "Build index (~100K files)",
-		"Search/1000_files":         "Standard workload (1K files)",
-		"Search/10000_files":        "Medium workload (10K files)",
-		"Normalize":                 "String cleaning (ASCII)",
-		"LevenshteinRatio":          "Zero allocation core distance",
-		"SearchWithCache":           "Search with internal cache",
-		"GetBoostScores":            "Ranking logic (Frecency)",
-		"RecordSelection":           "Updating selection history",
+		"Linux100k/ascii_short": "Real-world dataset (100K files)",
+		"Linux100k/ascii_ext":   "Extended ASCII search",
+		"Linux100k/path_like":   "Deep nesting (/usr/lib/...)",
+		"Linux100k/typo":        "Typo-tolerant search",
+		"Linux100k/long_query":  "Long query pattern",
+		"Linux100k_NewSearcher": "Build index (~100K files)",
+		"Search/1000_files":     "Standard workload (1K files)",
+		"Search/10000_files":    "Medium workload (10K files)",
+		"Normalize":             "String cleaning (ASCII)",
+		"LevenshteinRatio":      "Zero allocation core distance",
+		"SearchWithCache":       "Search with internal cache",
+		"GetBoostScores":        "Ranking logic (Frecency)",
+		"RecordSelection":       "Updating selection history",
 	}
 
 	for scanner.Scan() {

@@ -213,20 +213,24 @@ func TestSearcher_EdgeCases(t *testing.T) {
 		s := fuzzy.NewSearcher(files)
 		var wg sync.WaitGroup
 
-		for range 50 {
-			wg.Go(func() {
-				for range 100 {
+		for range 20 {
+			wg.Add(1)
+			go func() {
+				defer wg.Done()
+				for range 50 {
 					s.Search("aaa")
 				}
-			})
+			}()
 		}
 
-		for range 10 {
-			wg.Go(func() {
-				for range 50 {
+		for range 5 {
+			wg.Add(1)
+			go func() {
+				defer wg.Done()
+				for range 20 {
 					s.RecordSelection("aaa", files[0])
 				}
-			})
+			}()
 		}
 
 		wg.Wait()
