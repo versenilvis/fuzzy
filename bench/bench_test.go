@@ -46,17 +46,17 @@ func BenchmarkSearch(b *testing.B) {
 }
 
 func BenchmarkNormalize(b *testing.B) {
-	testStrings := []string{
-		"Path/To/Some/File_Name.go",
-		"ANOTHER_PATH_STRING",
-		"mixedCasePath/with-hyphens.txt",
-	}
-
-	b.ResetTimer()
+	str := "this/is/a/path/with/main.go"
 	for b.Loop() {
-		for _, s := range testStrings {
-			core.Normalize(s)
-		}
+		core.Normalize(str)
+	}
+}
+
+func BenchmarkLevenshteinRatio(b *testing.B) {
+	s1 := "authentication_service.go"
+	s2 := "authenticator_service.go"
+	for b.Loop() {
+		core.LevenshteinRatio(s1, s2)
 	}
 }
 

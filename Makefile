@@ -1,4 +1,4 @@
-.PHONY: test bench check
+.PHONY: test bench check-test check-bench
 
 test:
 	@go test -v ./tests/...
@@ -6,5 +6,8 @@ test:
 bench:
 	@go test -bench=. -benchmem ./bench/...
 
-check:
+ct: # check-test
 	@go run ./scripts/test_analyzer.go
+
+cb: # check-bench
+	@go run ./scripts/bench_analyzer.go
