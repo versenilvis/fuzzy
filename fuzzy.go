@@ -255,7 +255,7 @@ func (s *Searcher) findButTypo(query string) []core.FuzzyMatch {
 		if start >= numItems {
 			break
 		}
-		end := max(start+chunkSize, numItems)
+		end := min(start+chunkSize, numItems)
 
 		wg.Add(1)
 		go func(s0, e int) {
