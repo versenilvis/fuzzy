@@ -128,6 +128,9 @@ func NewSearcherWithMemory(items []string, memory *core.FileMemory) *Searcher {
 func (s *Searcher) SearchDebug(query string) {
 	fmt.Printf("DEBUG SEARCH Query: [%s]\n", query)
 	queryNorm := core.Normalize(query)
+	if queryNorm == "" {
+		return
+	}
 	queryPattern := []byte(queryNorm)
 
 	for i, item := range s.Originals {
@@ -144,6 +147,9 @@ func (s *Searcher) SearchWithScores(query string, opts ...*SearchOptions) []Matc
 	}
 
 	queryNorm := core.Normalize(query)
+	if queryNorm == "" {
+		return nil
+	}
 	queryPattern := []byte(queryNorm)
 
 	resLimit := 20
@@ -265,7 +271,7 @@ func (s *Searcher) findButTypo(query string) []core.FuzzyMatch {
 				// skip if the item is marked as deleted in the tombstone bin
 				blockIdx := j / 64
 				bitPos := uint64(1) << (j % 64)
-				if s.Filter.Bin[blockIdx]&bitPos != 0 {
+				if blockIdx < len(s.Filter.Bin) && s.Filter.Bin[blockIdx]&bitPos != 0 {
 					continue
 				}
 

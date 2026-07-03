@@ -14,7 +14,7 @@ func FuzzyScoreGreedy(pattern []byte, target []byte, baseStart int) (int, bool) 
 	lenP := len(pattern)
 	lenT := len(target)
 
-	if lenP > lenT {
+	if lenP == 0 || lenP > lenT {
 		return 0, false
 	}
 

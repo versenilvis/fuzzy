@@ -187,6 +187,12 @@ func TestSearcher_EdgeCases(t *testing.T) {
 		if len(s.Search("   ")) > 0 {
 			t.Error("Whitespace query should return no results")
 		}
+		if s.Search("?") != nil {
+			t.Error("Special character query that normalizes to empty should return nil")
+		}
+		if s.Search("@") != nil {
+			t.Error("Special character query that normalizes to empty should return nil")
+		}
 	})
 
 	t.Run("Empty input data", func(t *testing.T) {
